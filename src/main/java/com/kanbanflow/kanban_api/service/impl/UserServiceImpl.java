@@ -5,6 +5,7 @@ import com.kanbanflow.kanban_api.dto.UserRegistrationRequestDto;
 import com.kanbanflow.kanban_api.dto.UserRegistrationResponseDto;
 import com.kanbanflow.kanban_api.entity.User;
 import com.kanbanflow.kanban_api.exception.ResourceNotFoundException;
+import com.kanbanflow.kanban_api.exception.UserAlreadyExistsException;
 import com.kanbanflow.kanban_api.repository.UserRepository;
 import com.kanbanflow.kanban_api.service.NotificationService;
 import com.kanbanflow.kanban_api.service.UserService;
@@ -34,6 +35,12 @@ public class UserServiceImpl implements UserService {
     // Creating new user
     @Override
     public UserRegistrationResponseDto createUser(UserRegistrationRequestDto requestDto) {
+        // Check if user with username already exists
+        Optional<User> existingUser = userRepository.findByUsername(requestDto.getUsername());
+        if(existingUser.isPresent()){
+            throw new UserAlreadyExistsException("User with "+requestDto.getUsername()+" already exists");
+        }
+
         User user = new User();
         user.setUsername(requestDto.getUsername());
         user.setEmail(requestDto.getEmail());

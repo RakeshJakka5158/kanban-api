@@ -1,5 +1,6 @@
 package com.kanbanflow.kanban_api.config;
 
+import com.kanbanflow.kanban_api.config.filter.MdcFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,10 +21,12 @@ import com.kanbanflow.kanban_api.config.filter.JwtRequestFilter;
 public class SecurityConfig {
 
     private final JwtRequestFilter jwtRequestFilter;
+    private final MdcFilter mdcFilter;
 
     @Autowired
-    public SecurityConfig(JwtRequestFilter jwtRequestFilter) {
+    public SecurityConfig(JwtRequestFilter jwtRequestFilter, MdcFilter mdcFilter) {
         this.jwtRequestFilter = jwtRequestFilter;
+        this.mdcFilter = mdcFilter;
     }
 
     @Bean
@@ -36,7 +39,8 @@ public class SecurityConfig {
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(mdcFilter, JwtRequestFilter.class);
 
         return http.build();
     }

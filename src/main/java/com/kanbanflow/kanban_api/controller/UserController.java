@@ -3,20 +3,25 @@ package com.kanbanflow.kanban_api.controller;
 import com.kanbanflow.kanban_api.dto.GetUserResponseDto;
 import com.kanbanflow.kanban_api.dto.UserRegistrationRequestDto;
 import com.kanbanflow.kanban_api.dto.UserRegistrationResponseDto;
+import com.kanbanflow.kanban_api.entity.User;
+import com.kanbanflow.kanban_api.service.FileStorageService;
 import com.kanbanflow.kanban_api.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
 
     private final UserService userService;
+    private final FileStorageService fileStorageService;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, FileStorageService fileStorageService) {
         this.userService = userService;
+        this.fileStorageService = fileStorageService;
     }
 
     @PostMapping("/register")
@@ -27,5 +32,12 @@ public class UserController {
     @GetMapping("/{id}")
     public ResponseEntity<GetUserResponseDto> getUserById(@PathVariable("id") Long id){
         return ResponseEntity.ok(userService.getUserById(id));
+    }
+
+    @PostMapping("/{id}/profile-picture")
+    public ResponseEntity<String> uploadProfilePicture(@PathVariable Long id,@RequestParam("file") MultipartFile file){
+        GetUserResponseDto user = userService.getUserById(id);
+        String fileName = fileStorageService.storeFile(file);
+        return ResponseEntity.ok("File Uploaded Successfully: "+fileName);
     }
 }

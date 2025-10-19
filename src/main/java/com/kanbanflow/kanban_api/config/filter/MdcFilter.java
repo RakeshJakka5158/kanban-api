@@ -5,6 +5,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.MDC;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -14,25 +16,23 @@ import java.util.UUID;
 @Component
 public class MdcFilter extends OncePerRequestFilter {
 
-    private static final String TRACE_ID_HEADER = "X-Request-Trace-Id";
     private static final String TRACE_ID_MDC_KEY = "traceId";
-    private static final String USER_ID_MDC_KEY = "userId";
+    private static final String USER_NAME_MDC_KEY = "userName";
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        try {
-            // Populate MDC
-            String traceId = request.getHeader(TRACE_ID_HEADER);
-            if (traceId == null) {
-                traceId = UUID.randomUUID().toString();
-            }
-            MDC.put(TRACE_ID_MDC_KEY, traceId);
-            String userId = request.getHeader("X-User-Id");
-            if (userId != null) {
-                MDC.put(USER_ID_MDC_KEY, userId);
-            }
+        // Populate MDC
+        String traceId = UUID.randomUUID().toString();
+        MDC.put(TRACE_ID_MDC_KEY, traceId);
 
+        // Get username from security context if available
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated()
+                && !"anonymousUser".equals(authentication.getPrincipal())) {
+            MDC.put(USER_NAME_MDC_KEY, authentication.getName());
+        }
+        try {
             filterChain.doFilter(request, response);
         } finally {
             MDC.clear();

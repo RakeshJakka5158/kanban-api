@@ -9,6 +9,8 @@ import com.kanbanflow.kanban_api.exception.UserAlreadyExistsException;
 import com.kanbanflow.kanban_api.repository.UserRepository;
 import com.kanbanflow.kanban_api.service.NotificationService;
 import com.kanbanflow.kanban_api.service.UserService;
+import com.kanbanflow.kanban_api.service.Kafka.KafkaProducerService;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -25,11 +27,13 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final NotificationService notificationService;
+    private final KafkaProducerService kafkaProducerService;
 
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, NotificationService notificationService) {
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, NotificationService notificationService, KafkaProducerService kafkaProducerService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.notificationService = notificationService;
+        this.kafkaProducerService = kafkaProducerService;
     }
 
     // Creating new user
@@ -53,7 +57,7 @@ public class UserServiceImpl implements UserService {
 
         // Send email notification asynchronously
         logger.info("User {} created. Calling notification service on thread: {}", savedUser.getUsername(), Thread.currentThread().getName());
-        notificationService.sendWelcomeEmail(requestDto);
+        kafkaProducerService.sendUserCreatedEvent(requestDto);
         logger.info("Returning created user from UserService. Request thread is now free.");
 
         UserRegistrationResponseDto responseDto = new UserRegistrationResponseDto();

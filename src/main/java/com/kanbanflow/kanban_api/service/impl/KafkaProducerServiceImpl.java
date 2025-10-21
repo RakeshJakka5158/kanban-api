@@ -1,5 +1,7 @@
 package com.kanbanflow.kanban_api.service.impl;
+import com.kanbanflow.kanban_api.dto.ProjectCreatedEventDto;
 import com.kanbanflow.kanban_api.dto.UserRegistrationRequestDto;
+import com.kanbanflow.kanban_api.entity.Project;
 import org.slf4j.Logger;
 
 import org.slf4j.LoggerFactory;
@@ -11,19 +13,27 @@ import com.kanbanflow.kanban_api.service.Kafka.KafkaProducerService;
 
 @Service
 public class KafkaProducerServiceImpl implements KafkaProducerService {
-    private static final String TOPIC = "user_created";
+    private static final String USER_CREATED_TOPIC = "user_created";
+    private static final String PROJECT_CREATED_TOPIC = "project_created";
     private static final Logger logger = LoggerFactory.getLogger(KafkaProducerServiceImpl.class);
-    private final KafkaTemplate<String, UserRegistrationRequestDto> kafkaTemplate;
+    private final KafkaTemplate<String, Object> kafkaTemplate;
     
     @Autowired
-    public KafkaProducerServiceImpl(KafkaTemplate<String, UserRegistrationRequestDto> kafkaTemplate) {
+    public KafkaProducerServiceImpl(KafkaTemplate<String, Object> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
     }
 
     @Override
     public void sendUserCreatedEvent(UserRegistrationRequestDto requestDto) {
         logger.info("Sending topic to kafka ....");
-        this.kafkaTemplate.send(TOPIC, requestDto);
+        this.kafkaTemplate.send(USER_CREATED_TOPIC, requestDto);
     }
-    
+
+    @Override
+    public void sendProjectCreatedEvent(ProjectCreatedEventDto eventDto) {
+        logger.info("Sending topic to Kafka ...");
+        this.kafkaTemplate.send(PROJECT_CREATED_TOPIC,eventDto);
+    }
+
+
 }

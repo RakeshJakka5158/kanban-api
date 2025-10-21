@@ -26,13 +26,11 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final NotificationService notificationService;
     private final KafkaProducerService kafkaProducerService;
 
     public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, NotificationService notificationService, KafkaProducerService kafkaProducerService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
-        this.notificationService = notificationService;
         this.kafkaProducerService = kafkaProducerService;
     }
 

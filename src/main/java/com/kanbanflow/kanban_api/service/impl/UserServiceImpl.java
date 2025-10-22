@@ -9,7 +9,7 @@ import com.kanbanflow.kanban_api.exception.UserAlreadyExistsException;
 import com.kanbanflow.kanban_api.repository.UserRepository;
 import com.kanbanflow.kanban_api.service.NotificationService;
 import com.kanbanflow.kanban_api.service.UserService;
-import com.kanbanflow.kanban_api.service.Kafka.KafkaProducerService;
+import com.kanbanflow.kanban_api.service.KafkaProducerService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -3,11 +3,14 @@ package com.kanbanflow.kanban_api.controller;
 import com.kanbanflow.kanban_api.dto.CreateProjectRequestDto;
 import com.kanbanflow.kanban_api.dto.CreateProjectResponseDto;
 import com.kanbanflow.kanban_api.dto.GetProjectResponseDto;
+import com.kanbanflow.kanban_api.dto.UpdateProjectRequestDto;
 import com.kanbanflow.kanban_api.entity.User;
 import com.kanbanflow.kanban_api.service.ProjectService;
 import jakarta.validation.Valid;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 @RestController
@@ -30,5 +33,15 @@ public class ProjectController {
         // Get User from Authentication
         User user = (User) authentication.getPrincipal();
         return projectService.createProject(requestDto,user);
+    }
+
+    @GetMapping
+    public List<GetProjectResponseDto> getAllProjects(){
+        return projectService.getAllProjects();
+    }
+
+    @PostMapping("/{projectId}/members")
+    public GetProjectResponseDto updateProject(@PathVariable Long projectId, @Valid @RequestBody UpdateProjectRequestDto requestDto){
+        return projectService.updateProjectMembers(projectId,requestDto);
     }
 }

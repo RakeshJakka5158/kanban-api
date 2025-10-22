@@ -1,6 +1,7 @@
 package com.kanbanflow.kanban_api.service.impl;
 
 import com.kanbanflow.kanban_api.dto.ProjectCreatedEventDto;
+import com.kanbanflow.kanban_api.dto.UserAddedEventDto;
 import com.kanbanflow.kanban_api.dto.UserRegistrationRequestDto;
 import com.kanbanflow.kanban_api.service.NotificationService;
 import org.slf4j.Logger;
@@ -63,13 +64,30 @@ public class NotificationServiceImpl implements NotificationService {
     public void sendProjectCreatedNotificationMail(ProjectCreatedEventDto eventDto) {
         try {
             SimpleMailMessage mailMessage = new SimpleMailMessage();
-            LOGGER.info("Starting to send welcome email to {} on thread: {}", eventDto.getUserName(), Thread.currentThread().getName());
+            LOGGER.info("Starting to send email to {} on thread: {}", eventDto.getUserName(), Thread.currentThread().getName());
             mailMessage.setFrom(fromMailId);
             mailMessage.setTo(eventDto.getEmail());
             mailMessage.setSubject("New Project Created");
             mailMessage.setText("Hello, "+eventDto.getUserName()+". New project has been created successfully.");
             javaMailSender.send(mailMessage);
             LOGGER.info("Successfully sent notification email to {} on thread: {}", eventDto.getUserName(), Thread.currentThread().getName());
+        } catch (Exception e){
+            LOGGER.info("An exception occured {}",e.getMessage());
+        }
+    }
+
+    @Override
+    @KafkaListener(topics = "user_added", groupId = "kanban-group")
+    public void sendUserAddedToProjectNotification(UserAddedEventDto userAddedEventDto) {
+        try {
+            SimpleMailMessage mailMessage = new SimpleMailMessage();
+            LOGGER.info("Starting to send email to {} on thread: {}", userAddedEventDto.getUserName(), Thread.currentThread().getName());
+            mailMessage.setFrom(fromMailId);
+            mailMessage.setTo(userAddedEventDto.getEmail());
+            mailMessage.setSubject("New Project Created");
+            mailMessage.setText("Hello, "+userAddedEventDto.getUserName()+". You have been added to project: "+userAddedEventDto.getProjectName());
+            javaMailSender.send(mailMessage);
+            LOGGER.info("Successfully sent notification email to {} on thread: {}", userAddedEventDto.getUserName(), Thread.currentThread().getName());
         } catch (Exception e){
             LOGGER.info("An exception occured {}",e.getMessage());
         }

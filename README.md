@@ -4,17 +4,17 @@ A robust backend service for a collaborative project management tool built with 
 
 ## 📋 Table of Contents
 
-- [Overview](#overview)
-- [Features](#features)
-- [Technology Stack](#technology-stack)
-- [Prerequisites](#prerequisites)
-- [Getting Started](#getting-started)
-- [Configuration](#configuration)
-- [API Endpoints](#api-endpoints)
-- [Architecture](#architecture)
-- [Monitoring & Logging](#monitoring--logging)
-- [Security](#security)
-- [Development](#development)
+- [Overview](#-overview)
+- [Features](#-features)
+- [Technology Stack](#-technology-stack)
+- [Prerequisites](#-prerequisites)
+- [Getting Started](#-getting-started)
+- [Configuration](#-configuration)
+- [API Endpoints](#-api-endpoints)
+- [Architecture](#-architecture)
+- [Monitoring & Logging](#-monitoring--logging)
+- [Security](#-security)
+- [Development](#-development)
 
 ## 🎯 Overview
 
